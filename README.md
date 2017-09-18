@@ -8,6 +8,22 @@ Work in progress!
 ## Corpus
 - [Cornell Movie Dialogue](https://www.cs.cornell.edu/~cristian/Cornell_Movie-Dialogs_Corpus.html)
 
+## Usage
+### Preprocess
+```python
+python preprocess.py
+```
+create file `dialogue_corpus.txt` in `./data` directory.
+
+### Training Model
+```python
+python train.py
+```
+the hyperparameters of model defined in configuration file `config.json`.
+
+### Test bot
+Work in progress!
+
 ## Reference
 - [seq2seq-translation](https://github.com/spro/practical-pytorch/tree/master/seq2seq-translation)
 - [tensorflow_chatbot](https://github.com/llSourcell/tensorflow_chatbot)
