@@ -1,0 +1,93 @@
+# coding=utf8
+import os
+import json
+import math
+import random
+import time
+import torch
+import torch.nn as nn
+from torch.nn.utils import clip_grad_norm
+from model import Seq2Seq, Encoder, Decoder
+from data_utils import build_DataLoader
+from masked_cross_entropy import *
+from model_utils import build_model, save_model, model_evaluate
+
+with open('config.json') as config_file:
+    config = json.load(config_file)
+
+MODEL_PATH = config['TRAIN']['MODEL_PATH']
+USE_CUDA = config['TRAIN']['CUDA']
+
+n_epochs = config['TRAIN']['N_EPOCHS']
+batch_size = config['TRAIN']['BATCH_SIZE']
+clip = config['TRAIN']['CLIP']
+learning_rate = config['TRAIN']['LEARNING_RATE']
+teacher_forcing_ratio = config['TRAIN']['TEACHER_FORCING_RATIO']
+
+print_every = 200
+save_every = print_every * 10
+
+def train():
+    dataset = load_data(batch_size=batch_size)
+    vocab_size = dataset.get_vocab_size()
+    # with open('words_dict.txt', 'w') as file:
+    #     vocab_table = sorted(dataset.vocab.word2index.items(), key=lambda it: it[1])
+    #     for word, index in vocab_table:
+    #         file.write('%s %d\n' % (word, index))
+
+    model = create_model(vocab_size)
+    model_optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+
+    start = time.time()
+    dataset_len = len(dataset)
+    epoch = 0
+    print_loss_total = 0.0
+    print('Start Training.')
+    while epoch < n_epochs:
+        epoch += 1
+        input_group, target_group = dataset.random()
+        # zero gradients
+        model_optimizer.zero_grad()
+        # run seq2seq
+        all_decoder_outputs = model(input_group, target_group, teacher_forcing_ratio=1)
+        target_var, target_lens = target_group
+        # loss calculation and backpropagation
+        loss = masked_cross_entropy(
+            all_decoder_outputs.transpose(0, 1).contiguous(),
+            target_var.transpose(0, 1).contiguous(),
+            target_lens
+        )
+        print_loss_total += loss.data[0]
+        loss.backward()
+        clip_grad_norm(model.parameters(), clip)
+        # update parameters
+        model_optimizer.step()
+
+        if epoch % print_every == 0:
+            test_loss = model_evaluate(model, dataset)
+            print_summary(start, epoch, math.exp(print_loss_total / print_every))
+            print('learning rate: %.6f' % get_learning_rate(model_optimizer))
+            print('test PPL: %.4f' % math.exp(test_loss))
+            print_loss_total = 0.0
+
+            if epoch % save_every == 0:
+                save_model(model, epoch)
+        # break
+    save_model(model, epoch)
+
+def print_summary(start, epoch, print_ppl_avg):
+    output_log = '%s (epoch: %d finish: %d%%) PPL: %.4f' %\
+        (time_since(start, float(epoch) / n_epochs), epoch, float(epoch) / n_epochs * 100, print_ppl_avg)
+    print(output_log)
+
+def as_minutes(s):
+    m = math.floor(s / 60)
+    s -= m * 60
+    return '%dm %ds' % (m, s)
+
+def time_since(since, percent):
+    now = time.time()
+    s = now - since
+    es = s / (percent)
+    rs = es - s
+    return '%s (- %s)' % (as_minutes(s), as_minutes(rs))

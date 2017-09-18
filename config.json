@@ -15,11 +15,13 @@
         "N_EPOCHS": 100000,
         "BATCH_SIZE": 64,
         "LEARNING_RATE": 0.0001,
+        "TEACHER_FORCING_RATIO": 0.5,
         "CLIP": 5,
-        "VOCAB_PATH": "./checkpoint/vocab.txt",
-        "ModelPath": "./checkpoint/dump",
+        "PATH": "./checkpoint/",
+        "VOCABULARY": "vocabulary.txt",
+        "PREFIX": "dump"
     },
-    "Model": {
+    "MODEL": {
         "HIDDEN_SIZE": 256,
         "N_ENCODER_LAYERS": 3,
         "DROPOUT": 0.1,

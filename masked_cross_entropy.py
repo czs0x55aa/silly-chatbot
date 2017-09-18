@@ -7,7 +7,7 @@ from torch.autograd import Variable
 with open('config.json') as config_file:
     config = json.load(config_file)
 
-USE_CUDA = config['CUDA']
+USE_CUDA = config['TRAIN']['CUDA']
 
 def sequence_mask(sequence_length, max_len=None):
     if max_len is None:

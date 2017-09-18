@@ -5,7 +5,7 @@ import re
 import random
 import torch
 from torch.autograd import Variable
-from token import *
+from custom_token import *
 
 with open('config.json') as config_file:
     config = json.load(config_file)
@@ -20,7 +20,7 @@ MAX_LENGTH = config['LOADER']['MAX_LENGTH']
 # least word count
 MIN_COUNT = config['LOADER']['MIN_COUNT']
 
-def build_DataLoader(batch_size=20):
+def build_DataLoader(batch_size=32):
     pairs = []
     length_range = range(MIN_LENGTH, MAX_LENGTH)
     print('Loding Corpus.')
@@ -103,7 +103,7 @@ class Vocabulary(object):
             self.index_word(word)
 
         word_list = sorted(self.word2index.items(), key=lambda x: x[1])
-        with open('words_dict.txt', 'w') as file:
+        with open(config['TRIAN']['PATH'] + config['TRIAN']['VOCABULARY'], 'w') as file:
             for word, index in word_list:
                 file.write('%s %d\n' % (word, index))
 
