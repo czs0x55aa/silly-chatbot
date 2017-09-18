@@ -2,20 +2,17 @@
 import os
 import json
 import math
-import random
 import time
 import torch
 import torch.nn as nn
+from torch import optim
 from torch.nn.utils import clip_grad_norm
-from model import Seq2Seq, Encoder, Decoder
 from data_utils import build_DataLoader
 from masked_cross_entropy import *
 from model_utils import build_model, save_model, model_evaluate
 
 with open('config.json') as config_file:
     config = json.load(config_file)
-
-MODEL_PATH = config['TRAIN']['MODEL_PATH']
 USE_CUDA = config['TRAIN']['CUDA']
 
 n_epochs = config['TRAIN']['N_EPOCHS']
@@ -27,15 +24,15 @@ teacher_forcing_ratio = config['TRAIN']['TEACHER_FORCING_RATIO']
 print_every = 200
 save_every = print_every * 10
 
-def train():
-    dataset = load_data(batch_size=batch_size)
-    vocab_size = dataset.get_vocab_size()
+def main():
+    dataset = build_DataLoader(batch_size=batch_size)
+    vocab_size = dataset.get_vocabulary_size()
     # with open('words_dict.txt', 'w') as file:
     #     vocab_table = sorted(dataset.vocab.word2index.items(), key=lambda it: it[1])
     #     for word, index in vocab_table:
     #         file.write('%s %d\n' % (word, index))
 
-    model = create_model(vocab_size)
+    model = build_model(vocab_size)
     model_optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
     start = time.time()
@@ -45,7 +42,7 @@ def train():
     print('Start Training.')
     while epoch < n_epochs:
         epoch += 1
-        input_group, target_group = dataset.random()
+        input_group, target_group = dataset.random_batch()
         # zero gradients
         model_optimizer.zero_grad()
         # run seq2seq
@@ -66,7 +63,6 @@ def train():
         if epoch % print_every == 0:
             test_loss = model_evaluate(model, dataset)
             print_summary(start, epoch, math.exp(print_loss_total / print_every))
-            print('learning rate: %.6f' % get_learning_rate(model_optimizer))
             print('test PPL: %.4f' % math.exp(test_loss))
             print_loss_total = 0.0
 
@@ -91,3 +87,7 @@ def time_since(since, percent):
     es = s / (percent)
     rs = es - s
     return '%s (- %s)' % (as_minutes(s), as_minutes(rs))
+
+
+if __name__ == '__main__':
+    main()

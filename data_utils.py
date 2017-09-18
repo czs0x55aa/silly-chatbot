@@ -5,6 +5,7 @@ import re
 import random
 import torch
 from torch.autograd import Variable
+from model_utils import save_vocabulary
 from custom_token import *
 
 with open('config.json') as config_file:
@@ -39,7 +40,7 @@ def build_DataLoader(batch_size=32):
                 #     break
 
     print('Read dialogue pair: %d' % len(pairs))
-    vocab = Vocab()
+    vocab = Vocabulary()
     for pa, pb in pairs:
         for word in pa + pb:
             vocab.index_word(word)
@@ -102,11 +103,9 @@ class Vocabulary(object):
         for word in keep_words:
             self.index_word(word)
 
-        word_list = sorted(self.word2index.items(), key=lambda x: x[1])
-        with open(config['TRIAN']['PATH'] + config['TRIAN']['VOCABULARY'], 'w') as file:
-            for word, index in word_list:
-                file.write('%s %d\n' % (word, index))
-
+        vocabulary_list = sorted(self.word2index.items(), key=lambda x: x[1])
+        save_vocabulary(vocabulary_list)
+        
 
 class DataLoader(object):
     def __init__(self, vocabulary, src_pairs, batch_size):

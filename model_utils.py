@@ -2,10 +2,9 @@
 import os
 import sys
 import json
-import math
 import random
-import time
 import torch
+from model import Seq2Seq, Encoder, Decoder
 from masked_cross_entropy import *
 
 with open('config.json') as config_file:
@@ -13,6 +12,8 @@ with open('config.json') as config_file:
 
 CKPT_PATH = config['TRAIN']['PATH']
 USE_CUDA = config['TRAIN']['CUDA']
+
+batch_size = config['TRAIN']['BATCH_SIZE']
 
 def model_evaluate(model, dataset, evaluate_num=10):
     model.train(False)
@@ -27,7 +28,7 @@ def model_evaluate(model, dataset, evaluate_num=10):
             target_lens
         )
         total_loss += loss.data[0]
-        format_output(dataset.vocab.index2word, input_group, target_group, all_decoder_outputs)
+        format_output(dataset.vocabulary.index2word, input_group, target_group, all_decoder_outputs)
     model.train(True)
     return total_loss / evaluate_num
 
@@ -59,14 +60,15 @@ def build_model(vocab_size, load_ckpt=False, ckpt_epoch=-1):
     attn_method = config['MODEL']['ATTN_METHOD']
     n_encoder_layers = config['MODEL']['N_ENCODER_LAYERS']
     dropout = config['MODEL']['DROPOUT']
-    encoder = Encoder(vocab_size, hidden_size, n_encoder_layers, dropout)
-    decoder = Decoder(hidden_size, vocab_size, attn_method, dropout)
+    encoder = Encoder(vocab_size, hidden_size, n_encoder_layers, dropout=dropout)
+    decoder = Decoder(hidden_size, vocab_size, attn_method, dropout=dropout)
     model = Seq2Seq(
         encoder=encoder,
         decoder=decoder,
         max_length=config['LOADER']['MAX_LENGTH'],
         tie_weights=config['MODEL']['TIE_WEIGHTS']
     )
+    print(model)
     if load_ckpt is True and os.path.exists(CKPT_PATH) is True:
         # load checkpoint
         prefix = config['TRAIN']['PREFIX']
@@ -88,19 +90,27 @@ def build_model(vocab_size, load_ckpt=False, ckpt_epoch=-1):
             model.load_state_dict(torch.load(model_path))
             print('Load %s' % model_path)
 
-    print(model)
-    if USE_CUDA:
-        model = model.cuda()
     # print('Seq2Seq parameters:')
     # for name, param in model.state_dict().items():
     #     print(name, param.size())
+    if USE_CUDA:
+        model = model.cuda()
     return model
 
-def save_model(model, epoch):
+def init_path():
     if os.path.exists(CKPT_PATH) is False:
         os.mkdir(CKPT_PATH)
+
+def save_model(model, epoch):
+    init_path()
     save_path = '%s%s_%d' % (CKPT_PATH, config['TRAIN']['PREFIX'], epoch)
     torch.save(model.state_dict(), save_path)
+
+def save_vocabulary(vocabulary_list):
+    init_path()
+    with open(CKPT_PATH + config['TRAIN']['VOCABULARY'], 'w') as file:
+        for word, index in vocabulary_list:
+            file.write('%s %d\n' % (word, index))
 
 if __name__ == '__main__':
     pass

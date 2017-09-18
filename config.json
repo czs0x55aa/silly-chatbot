@@ -11,7 +11,7 @@
         "MIN_COUNT": 2
     },
     "TRAIN": {
-        "CUDA": true,
+        "CUDA": false,
         "N_EPOCHS": 100000,
         "BATCH_SIZE": 64,
         "LEARNING_RATE": 0.0001,

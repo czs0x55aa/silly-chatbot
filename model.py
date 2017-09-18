@@ -11,7 +11,7 @@ from custom_token import *
 
 with open('config.json') as config_file:
     config = json.load(config_file)
-USE_CUDA = config['CUDA']
+USE_CUDA = config['TRAIN']['CUDA']
 
 class Seq2Seq(nn.Module):
     def __init__(self, encoder, decoder, max_length=20, tie_weights=False):
