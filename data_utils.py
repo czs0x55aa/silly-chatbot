@@ -5,7 +5,6 @@ import re
 import random
 import torch
 from torch.autograd import Variable
-from model_utils import save_vocabulary
 from custom_token import *
 
 with open('config.json') as config_file:
@@ -114,9 +113,6 @@ class Vocabulary(object):
         self.reset()
         for word in keep_words:
             self.index_word(word)
-
-        vocabulary_list = sorted(self.word2index.items(), key=lambda x: x[1])
-        save_vocabulary(vocabulary_list)
 
 
 class DataLoader(object):

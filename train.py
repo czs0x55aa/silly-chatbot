@@ -26,6 +26,8 @@ save_every = print_every * 10
 
 def main():
     dataset = build_DataLoader(batch_size=batch_size)
+    vocabulary_list = sorted(dataset.vocabulary.word2index.items(), key=lambda x: x[1])
+    save_vocabulary(vocabulary_list)
     vocab_size = dataset.get_vocabulary_size()
     model = build_model(vocab_size)
     model_optimizer = optim.Adam(model.parameters(), lr=learning_rate)
