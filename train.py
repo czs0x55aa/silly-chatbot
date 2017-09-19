@@ -27,11 +27,6 @@ save_every = print_every * 10
 def main():
     dataset = build_DataLoader(batch_size=batch_size)
     vocab_size = dataset.get_vocabulary_size()
-    # with open('words_dict.txt', 'w') as file:
-    #     vocab_table = sorted(dataset.vocab.word2index.items(), key=lambda it: it[1])
-    #     for word, index in vocab_table:
-    #         file.write('%s %d\n' % (word, index))
-
     model = build_model(vocab_size)
     model_optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
@@ -63,9 +58,9 @@ def main():
         if epoch % print_every == 0:
             test_loss = model_evaluate(model, dataset)
             print_summary(start, epoch, math.exp(print_loss_total / print_every))
-            print('test PPL: %.4f' % math.exp(test_loss))
+            print('Test PPL: %.4f' % math.exp(test_loss))
+            exit()
             print_loss_total = 0.0
-
             if epoch % save_every == 0:
                 save_model(model, epoch)
         # break

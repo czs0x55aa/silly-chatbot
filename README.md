@@ -13,7 +13,7 @@ Work in progress!
 ```python
 python preprocess.py
 ```
-create file `dialogue_corpus.txt` in `./data` directory.
+this script will create file `dialogue_corpus.txt` in `./data` directory.
 
 ### Training Model
 ```python
@@ -22,7 +22,9 @@ python train.py
 the hyperparameters of model defined in configuration file `config.json`.
 
 ### Test bot
-Work in progress!
+```python
+python chatbot
+```
 
 ## Reference
 - [seq2seq-translation](https://github.com/spro/practical-pytorch/tree/master/seq2seq-translation)
