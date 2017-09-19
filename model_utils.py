@@ -6,6 +6,7 @@ import random
 import torch
 import data_utils
 from model import Seq2Seq, Encoder, Decoder
+from data_utils import Vocabulary
 from masked_cross_entropy import *
 from custom_token import *
 
@@ -100,6 +101,21 @@ def save_vocabulary(vocabulary_list):
     with open(CKPT_PATH + config['TRAIN']['VOCABULARY'], 'w') as file:
         for word, index in vocabulary_list:
             file.write('%s %d\n' % (word, index))
+
+def load_vocabulary():
+    if os.path.exists(CKPT_PATH + config['TRAIN']['VOCABULARY']):
+        word2index = {}
+        with open(CKPT_PATH + config['TRAIN']['VOCABULARY']) as file:
+            for line in file:
+                line_spl = line[:-1].split()
+                word2index[line_spl[0]] = int(line_spl[1])
+        index2word = dict(zip(word2index.values(), word2index.keys()))
+        vocab = Vocabulary()
+        vocab.word2index = word2index
+        vocab.index2word = index2word
+        return vocab
+    else:
+        raise('not found %s' % CKPT_PATH + config['TRAIN']['VOCABULARY'])
 
 class BotAgent(object):
     def __init__(self, model, vocab):
