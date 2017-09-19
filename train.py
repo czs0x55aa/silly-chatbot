@@ -59,7 +59,6 @@ def main():
             test_loss = model_evaluate(model, dataset)
             print_summary(start, epoch, math.exp(print_loss_total / print_every))
             print('Test PPL: %.4f' % math.exp(test_loss))
-            exit()
             print_loss_total = 0.0
             if epoch % save_every == 0:
                 save_model(model, epoch)

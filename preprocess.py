@@ -2,6 +2,7 @@
 import random
 import json
 import re
+import data_utils
 
 with open('config.json') as config_file:
     config = json.load(config_file)
@@ -30,18 +31,6 @@ def load_movie_lines(file_path):
             id2sentence[lid] = sentence
     return id2sentence
 
-# Regular expressions used to tokenize.
-_WORD_SPLIT = re.compile(b"([.,!?\"':;)(])")
-
-def basic_tokenizer(sentence):
-    """Very basic tokenizer: split the sentence into a list of tokens."""
-    sentence = sentence.lower()
-    sentence = re.sub(r"[^a-zA-Z',.!?]+", r" ", sentence)
-    words = []
-    for space_separated_fragment in sentence.strip().split():
-        words.extend(re.split(_WORD_SPLIT, space_separated_fragment))
-    return [w for w in words if w]
-
 def export_dialogue_corpus():
     dialogues = load_conversations(DATA_PATH + MOVIE_CONVERSATIONS)
     id2sentence = load_movie_lines(DATA_PATH + MOVIE_LINES)
@@ -49,7 +38,7 @@ def export_dialogue_corpus():
     for ids in dialogues:
         length = len(ids) if len(ids) % 2 == 0 else len(ids) - 1
         for i in range(length):
-            sentence = ' '.join(basic_tokenizer(id2sentence[ids[i]]))
+            sentence = ' '.join(data_utils.basic_tokenizer(id2sentence[ids[i]]))
             if i % 2 == 0:
                 questions.append(sentence)
             else:

@@ -4,6 +4,7 @@ import sys
 import json
 import random
 import torch
+import data_utils
 from model import Seq2Seq, Encoder, Decoder
 from masked_cross_entropy import *
 from custom_token import *
@@ -121,7 +122,7 @@ class BotAgent(object):
         return resp_words
 
     def build_input_var(self, user_input):
-        words = user_input.lower().split()
+        words = data_utils.basic_tokenizer(user_input)
         words_index = []
         unknown_words = []
         for word in words:

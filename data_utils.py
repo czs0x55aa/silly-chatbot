@@ -21,6 +21,18 @@ MAX_LENGTH = config['LOADER']['MAX_LENGTH']
 # least word count
 MIN_COUNT = config['LOADER']['MIN_COUNT']
 
+# Regular expressions used to tokenize.
+_WORD_SPLIT = re.compile(b"([.,!?\"':;)(])")
+
+def basic_tokenizer(sentence):
+    """Very basic tokenizer: split the sentence into a list of tokens."""
+    sentence = sentence.lower()
+    sentence = re.sub(r"[^a-zA-Z',.!?]+", r" ", sentence)
+    words = []
+    for space_separated_fragment in sentence.strip().split():
+        words.extend(re.split(_WORD_SPLIT, space_separated_fragment))
+    return [w for w in words if w]
+
 def build_DataLoader(batch_size=32):
     pairs = []
     length_range = range(MIN_LENGTH, MAX_LENGTH)
@@ -105,7 +117,7 @@ class Vocabulary(object):
 
         vocabulary_list = sorted(self.word2index.items(), key=lambda x: x[1])
         save_vocabulary(vocabulary_list)
-        
+
 
 class DataLoader(object):
     def __init__(self, vocabulary, src_pairs, batch_size):
