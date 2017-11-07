@@ -9,7 +9,7 @@ from torch import optim
 from torch.nn.utils import clip_grad_norm
 from data_utils import build_DataLoader
 from masked_cross_entropy import *
-from model_utils import build_model, save_model, model_evaluate
+from model_utils import build_model, save_model, model_evaluate, save_vocabulary
 
 with open('config.json') as config_file:
     config = json.load(config_file)
@@ -21,7 +21,7 @@ clip = config['TRAIN']['CLIP']
 learning_rate = config['TRAIN']['LEARNING_RATE']
 teacher_forcing_ratio = config['TRAIN']['TEACHER_FORCING_RATIO']
 
-print_every = 200
+print_every = 20
 save_every = print_every * 10
 
 def main():
