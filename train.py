@@ -21,7 +21,7 @@ clip = config['TRAIN']['CLIP']
 learning_rate = config['TRAIN']['LEARNING_RATE']
 teacher_forcing_ratio = config['TRAIN']['TEACHER_FORCING_RATIO']
 
-print_every = 20
+print_every = 200
 save_every = print_every * 10
 
 def main():
