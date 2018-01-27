@@ -1,6 +1,6 @@
 # silly-chatbot
 seq2seq chatbot implement using PyTorch.
-
+PS:这个版本的代码写的比较凌乱，功能也不完善(没有beam search, antiLM等)。目前没有时间维护，写完硕士论文会考虑更新。
 ## Requirements
 - Python 2.7
 - Pytorch 0.12
