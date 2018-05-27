@@ -1,5 +1,5 @@
 # silly-chatbot 
-**The repository has stopped maintenance, new project links: [pytorch-chatbot](https://github.com/czs0x55aa/pytorch-chatbot)**
+**This repository has stopped maintenance, new project links: [pytorch-chatbot](https://github.com/czs0x55aa/pytorch-chatbot)**
 
 ## Requirements
 - Python 2.7
